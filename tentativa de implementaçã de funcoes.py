@@ -1,0 +1,361 @@
+import os 
+import platform
+
+arquivo = open("Sistema de Treinos.txt", "a")
+arquivo.close()
+
+def clear():
+    OS = platform.system()
+    if OS == "Darwin":
+        os.system("clear")
+    else:
+        os.system("cls")
+
+clear()
+
+def abrir_leitura():
+    treino = open("Sistema de Treinos.txt", "r")
+    conteudo = treino.read()
+    treino.close()
+
+    return conteudo
+
+def pergunta():
+    while True:
+        resposta = input("Você quer continuar? s/n \nRESPOSTA: ").lower()
+
+        if resposta == "s":
+            clear()
+            return True
+
+        elif resposta == "n":
+            return False
+        else: 
+            print("RESPOSTA INVÁLIDA!") 
+
+def nomeDOtreino(conteudo):
+    while True:
+        nome_treino = input("Digite o nome do treino: ")
+        if f"NOME DO TREINO: {nome_treino.upper().strip()}" in conteudo:
+            clear()
+            print("O treino ja existe!\n")
+            continue
+        else:
+            clear()
+            break
+    return nome_treino
+
+def tipoDEtreino():
+    while True:
+        tipo_treino = input("[1] CORRIDA / [2] FORÇA / [3] SIMULADO HYROX \n\nDigite o tipo de treino entre os disponíveis: " )
+        
+        if tipo_treino == "1":
+            tipo = "CORRIDA"
+            break
+
+        elif tipo_treino == "2":
+            tipo = "FORÇA"
+            break
+        
+        elif tipo_treino == "3":
+            tipo = "SIMULADO HYROX"
+            break
+        
+        else: 
+            clear()
+            print("Resposta inválida!")
+            continue
+    clear()
+    return tipo
+
+def intensidadeDEtreino():
+    while True:
+        intensidade_treino = input("[1] - LEVE / [2] - MODERADO / [3] - PESADO"
+        "\nDigite o número de intensidade: ")
+
+        if intensidade_treino == "1":
+            intensidade_final = "Treino Leve"
+            break
+
+        elif intensidade_treino == "2":
+            intensidade_final = "Treino Moderado"
+            break
+
+        elif intensidade_treino == "3":
+            intensidade_final = "Treino Pesado"
+            break
+        
+        else:
+            clear()
+            print("Resposta Inválida!")
+            continue
+    return intensidade_final
+    
+def controledesempenho(nomedotreino):
+
+    desemp = {} 
+
+    # ================= ABRE O ARQUIVO ===================
+
+    file = open("Sistema de Treinos.txt", "r")
+    conteudo = file.read()
+    file.close()
+
+    treinos = conteudo.split("\n\n")
+
+    if "EXERCICIOS:" in treinos[-1]: 
+
+        desempenhos = (treinos[-1]).split("\n---\n")
+
+        achou = False
+        for i in range(1, len(desempenhos)-1):
+            if nomedotreino + "\n" in desempenhos[i]:
+                esse_desempenho = desempenhos[i]
+                index = i
+                achou = True
+                break
+        
+        if achou:
+
+            linhas = esse_desempenho.split("\n")
+            
+            i = 1
+            while i <= len(linhas)-4:
+                desemp[linhas[i]] = [linhas[i+1].split("\t")[2:-1],
+                                    linhas[i+2].split("\t")[1:-1],
+                                    linhas[i+3].split("\t")[2:-1],
+                                    linhas[i+4].split("\t")[1:-1]]
+                i += 5
+        
+        else:
+            desempenhos.append("valor que vai ser trocado dps")
+            index = len(desempenhos)-1
+                
+    else:
+        desempenhos = ["EXERCICIOS:", "valor que vai ser trocado dps"]
+        index = 1
+        treinos.append(desempenhos)
+
+
+    # ====================== ADICIONAR NOVA LEITURA / CRIAR EXERCICIO =============
+
+    def add(exercicio):
+        #exercicio é o nome do exercicio
+
+        if exercicio not in desemp.keys():
+            desemp[exercicio] = [[],[],[],[]] #se o exercicio não existir ainda, criar uma matriz pra ele
+
+        tempo = input("Insira o tempo: ")
+        dist = input("Insira a distância: ")
+        carga = input("Insira a carga: ")
+        rep = input("Insira a quantidade de repetições: ")
+
+        desemp[exercicio][0].append(tempo)
+        desemp[exercicio][1].append(dist)
+        desemp[exercicio][2].append(carga)
+        desemp[exercicio][3].append(rep)
+
+        print(f"Exercício {exercicio} atualizado!\n")
+
+    # ====================== SALVAR MATRIZ =========================
+
+    def salvarmatriz():
+        dados = nomedotreino
+
+        for exercicio in desemp.keys():
+            dados += "\n" + exercicio.upper()
+
+            dados += ("\nTempos:\t\t")
+            for d in desemp[exercicio][0]:
+                dados += (d + "\t")
+
+            dados += ("\nDistâncias:\t")
+            for d in desemp[exercicio][1]:
+                dados += (d + "\t")
+
+            dados += ("\nCargas:\t\t")
+            for d in desemp[exercicio][2]:
+                dados += (d + "\t")
+
+            dados += ("\nRepetições:\t")
+            for d in desemp[exercicio][3]:
+                dados += (d + "\t")
+        
+        desempenhos[index] = dados
+
+        treinos.pop()
+        treinos.append("\n---\n".join(desempenhos))
+
+        conteudo = "\n\n".join(treinos)
+
+
+        file = open("Sistema de Treinos.txt", "w")
+        file.write(conteudo)
+        file.close()
+        
+    # ====================== LOOP PRINCIPAL =========================
+
+    print("EXERCICIOS e Controle de Desempenho\n")
+
+    cmd = "S"
+    while True:
+        if cmd == "S":
+            nome = input("Digite o nome do exercício que deseja adicionar/atualizar: ").upper()
+
+            add(nome)
+        elif cmd == "N":
+            salvarmatriz()
+            print("Encerrando programa...")
+            break
+        else:
+            print("comando não reconhecido.")
+        
+        cmd = input("Deseja continuar? (S/N) ").upper()
+
+while True:
+    print("==========BEM VINDO AO HYROX PLANNER==========\n")
+    opcao_escolhida = input("Você deseja:" 
+     "\n[1] Adicionar\n"
+      "[2] Visualizar\n"
+      "[3] Editar\n"
+      "[4] Excluir\n"
+      "[5] Controle de Desempenho\n"
+      "[6] Parar \n"
+      "\nRESPOSTA: ")
+    
+    
+    clear()
+    
+    if opcao_escolhida == "1":
+        conteudo = abrir_leitura()
+
+        nome_treino = nomeDOtreino(conteudo)
+
+        tipo = tipoDEtreino()
+
+        data_treino = input("Digite a data do treino: ")
+        clear()
+
+        duracao_treino = input("Digite o tempo de duração: ")
+        clear()
+
+        intensidade_final = intensidadeDEtreino()
+            
+        clear()
+        
+        treino = open("Sistema de Treinos.txt", "a")
+        treino.write("Dados do Treino:" 
+                        "\nNOME DO TREINO: " + nome_treino.upper().strip() + 
+                        "\nTIPO DE TREINO: " + tipo + 
+                        "\nDATA DO TREINO: " + data_treino + 
+                        "\nDURAÇÃO DO TREINO: " + duracao_treino +
+                        "\nINTENSIDADE DO TREINO: " + intensidade_final 
+                        + "\n\n")
+        clear()
+        print("Treino Adicionado com Sucesso! \n\n")
+        treino = open("Sistema de Treinos.txt", "r")
+        treino.close()
+
+
+    elif opcao_escolhida == "2":
+        clear()
+        treino = open("Sistema de Treinos.txt", "r")
+        print(treino.read())
+        treino.close()
+        if not pergunta():
+            break
+
+
+    elif opcao_escolhida == "3":
+        conteudo = abrir_leitura()
+        treinos = conteudo.split("\n\n")
+
+        while True:
+            treino_antigo = input("Digite qual treino deseja editar: ")
+            if f"NOME DO TREINO: {treino_antigo.upper()}" in conteudo:
+                clear()
+                break
+            else:
+                print("Treino Inexistente!!\n\n")
+                continue
+        
+        treino_novo = nomeDOtreino(conteudo)
+
+        tipo = tipoDEtreino()
+
+        data_nova = input("Digite a nova data do treino: ")
+        clear()
+
+        duracao_nova = input("Digite o novo tempo de duração: ")
+        clear()
+
+        intensidade_final = intensidadeDEtreino()
+
+        dados_novos = ("Dados do Treino: "
+                       "\nNOME DO TREINO: " + treino_novo.upper().strip() + 
+                       "\nTIPO DE TREINO: " + tipo +
+                       "\nDATA DO TREINO: " + data_nova + 
+                       "\nDURAÇÃO DO TREINO: " + duracao_nova + 
+                       "\nINTENSIDADE DO TREINO: " + intensidade_final)
+
+        for i in range(len(treinos)):
+            if "NOME DO TREINO: " + treino_antigo.upper().strip() in treinos[i]:
+                treinos[i] = dados_novos
+
+        novo_conteudo = "\n\n".join(treinos)
+
+        treino = open("Sistema de Treinos.txt", "w")
+        treino.write(novo_conteudo)
+        treino.close()
+        clear()
+        print("Treino editado com Sucesso!")
+
+        if not pergunta():
+            break
+
+
+    elif opcao_escolhida == "4":
+        conteudo = abrir_leitura()
+        treinos = conteudo.split("\n\n")
+        
+        while True: 
+            treino_excluir = input("Digite o treino que deseja excluir: ")
+            if f"NOME DO TREINO: " + treino_excluir.upper().strip() in conteudo:
+                clear()
+                break
+            else:
+                clear()
+                print("Treino inexistente!\n")
+                continue
+
+        conjunto_fica = []
+        
+        for i in range(len(treinos)):
+            if "NOME DO TREINO: " + treino_excluir.upper().strip() in treinos[i]:
+                continue
+            else:
+                conjunto_fica.append(treinos[i])
+                
+        conjunto_fica = "\n\n".join(conjunto_fica)
+        
+        treino = open("Sistema de Treinos.txt", "w")
+        treino.write(conjunto_fica)
+        treino.close()
+        print("Treino Excluído Com Sucesso!\n\n")
+        
+
+    elif opcao_escolhida == "5":
+        treinoCD = input("Digite um treino para adicionar um desempenho: ")
+        controledesempenho(treinoCD)
+
+
+    elif opcao_escolhida == "6":
+        print("Programa Finalizado!")
+        break
+    
+
+    else:
+        print("Opção inválida!")
+        if not pergunta():
+            break
+
