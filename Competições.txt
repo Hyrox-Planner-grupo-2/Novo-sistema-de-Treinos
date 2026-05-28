@@ -1,0 +1,10 @@
+
+==========corrida==========
+DATA: 22/09/2026 	Faltam 117 dias
+LOCAL: recife
+CATEGORIA: corrida
+
+==========musculacao abetta==========
+DATA: 28/05/2026 	É HOJE!
+LOCAL: recife
+CATEGORIA: forca
