@@ -60,7 +60,7 @@ def tipoDEtreino():
             elif tipo_treino == 3:
                 tipo = "SIMULADO HYROX"
             
-        except ValueError, TypeError: 
+        except (ValueError, TypeError): 
             clear()
             print("Resposta inválida!")
             continue
@@ -114,7 +114,7 @@ def controledesempenho(nomedotreino):
     desemp = {} 
 
     # ================= ABRE O ARQUIVO ===================
-
+ 
     file = open("Sistema de Treinos.txt", "r")
     conteudo = file.read()
     file.close()
@@ -218,12 +218,14 @@ def controledesempenho(nomedotreino):
     cmd = "S"
     while True:
         if cmd == "S":
+            clear()
             nome = input("Digite o nome do exercício que deseja adicionar/atualizar: ").upper()
 
             add(nome)
         elif cmd == "N":
             salvarmatriz()
             print("Encerrando programa...")
+            clear()
             break
         else:
             print("comando não reconhecido.")
@@ -421,7 +423,17 @@ while True:
 
    elif opcao_escolhida == "6":
         treinoCD = input("Digite um treino para adicionar um desempenho: ")
-        controledesempenho(treinoCD)
+
+        treino = open("Sistema de Treinos.txt", "r")
+        conteudo = treino.read
+        if "NOME DO TREINO: " + treinoCD.upper() in conteudo:
+            # só deixa adicionar um treino ao controle de desempenho se ele existir no crude,
+            # ⚠️ mas não impede o nome de ficar diferente aqui se o treino original for renomeado ou deletado
+            controledesempenho(treinoCD)
+        else:
+            print("Treino inexistente, adicione ele pelo CRUDE primeiro!")
+            break
+        
 
 
    elif opcao_escolhida == "7":
