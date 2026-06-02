@@ -109,169 +109,15 @@ def validar_data():
             print("Data inválida! Use o formato dd/mm/aaaa.\n")
             continue
 
-def controledesempenho(nomedotreino):
-
-    desemp = {} 
-
-    # ================= ABRE O ARQUIVO ===================
-
-    file = open("Sistema de Treinos.txt", "r")
-    conteudo = file.read()
-    file.close()
-
-    treinos = conteudo.split("\n\n")
-
-    if "EXERCICIOS:" in treinos[-1]: 
-
-        desempenhos = (treinos[-1]).split("\n---\n")
-
-        achou = False
-        for i in range(1, len(desempenhos)-1):
-            if nomedotreino + "\n" in desempenhos[i]:
-                esse_desempenho = desempenhos[i]
-                index = i
-                achou = True
-                break
-        
-        if achou:
-
-            linhas = esse_desempenho.split("\n")
-            
-            i = 1
-            while i <= len(linhas)-4:
-                desemp[linhas[i]] = [linhas[i+1].split("\t")[2:-1],
-                                    linhas[i+2].split("\t")[1:-1],
-                                    linhas[i+3].split("\t")[2:-1],
-                                    linhas[i+4].split("\t")[1:-1]]
-                i += 5
-        
-        else:
-            desempenhos.append("valor que vai ser trocado dps")
-            index = len(desempenhos)-1
-                
-    else:
-        desempenhos = ["EXERCICIOS:", "valor que vai ser trocado dps"]
-        index = 1
-        treinos.append(desempenhos)
-
-
-    # ====================== ADICIONAR NOVA LEITURA / CRIAR EXERCICIO =============
-
-    def add(exercicio):
-        #exercicio é o nome do exercicio
-
-        if exercicio not in desemp.keys():
-            desemp[exercicio] = [[],[],[],[]] #se o exercicio não existir ainda, criar uma matriz pra ele
-
-        tempo = input("Insira o tempo: ")
-        dist = input("Insira a distância: ")
-        carga = input("Insira a carga: ")
-        rep = input("Insira a quantidade de repetições: ")
-
-        desemp[exercicio][0].append(tempo)
-        desemp[exercicio][1].append(dist)
-        desemp[exercicio][2].append(carga)
-        desemp[exercicio][3].append(rep)
-
-        print(f"Exercício {exercicio} atualizado!\n")
-
-    # ====================== SALVAR MATRIZ =========================
-
-    def salvarmatriz():
-        dados = nomedotreino
-
-        for exercicio in desemp.keys():
-            dados += "\n" + exercicio.upper()
-
-            dados += ("\nTempos:\t\t")
-            for d in desemp[exercicio][0]:
-                dados += (d + "\t")
-
-            dados += ("\nDistâncias:\t")
-            for d in desemp[exercicio][1]:
-                dados += (d + "\t")
-
-            dados += ("\nCargas:\t\t")
-            for d in desemp[exercicio][2]:
-                dados += (d + "\t")
-
-            dados += ("\nRepetições:\t")
-            for d in desemp[exercicio][3]:
-                dados += (d + "\t")
-        
-        desempenhos[index] = dados
-
-        treinos.pop()
-        treinos.append("\n---\n".join(desempenhos))
-
-        conteudo = "\n\n".join(treinos)
-
-
-        file = open("Sistema de Treinos.txt", "w")
-        file.write(conteudo)
-        file.close()
-        
-    # ====================== LOOP PRINCIPAL =========================
-
-    print("EXERCICIOS e Controle de Desempenho\n")
-
-    cmd = "S"
-    while True:
-        if cmd == "S":
-            nome = input("Digite o nome do exercício que deseja adicionar/atualizar: ").upper()
-
-            add(nome)
-        elif cmd == "N":
-            salvarmatriz()
-            print("Encerrando programa...")
-            break
-        else:
-            print("comando não reconhecido.")
-        
-        cmd = input("Deseja continuar? (S/N) ").upper()
-
-def calcular_dias_restantes(data_):
-    import datetime
-    try:
-        data_evento = datetime.datetime.strptime(data_.strip(), "%d/%m/%Y").date()
-        data_hoje = datetime.date.today()
-        diferenca = data_evento - data_hoje
-        
-        if diferenca.days > 0:
-            return f"Faltam {diferenca.days} dias"
-        elif diferenca.days == 0:
-            return "É HOJE!"
-        else:
-            return f"Aconteceu há {abs(diferenca.days)} dias"
-    except ValueError:
-        return "Data inválida"
-
-def adicionar_competicao(comp,data,local,cat):
-
-    status_dias = calcular_dias_restantes(data)
-    
-    dados_competicao =(f"\n=========={comp}==========\n"
-                       f"DATA: {data} \t{status_dias}\n"
-                       f"LOCAL: {local}\n"
-                       f"CATEGORIA: {cat}\n")
-    
-    arquivo = open("Competições.txt","a")
-    arquivo.write(dados_competicao)
-    arquivo.close()
-
-
 
 while True:
    print("==========BEM VINDO AO HYROX PLANNER==========\n")
    opcao_escolhida = input("Você deseja:" 
     "\n[1] Adicionar\n"
         "[2] Visualizar treinos\n"
-        "[3] Visualizar competições \n"
-        "[4] Editar\n"
-        "[5] Excluir\n"
-        "[6] Controle de Desempenho\n"
-        "[7] Adicionar competição \n"
-        "[8] Parar"
+        "[3] Editar\n"
+        "[4] Excluir\n"
+        "[5] Parar"
         "\nRESPOSTA: ")
 
    clear()
@@ -317,27 +163,6 @@ while True:
 
 
    elif opcao_escolhida == "3":
-        clear()
-        print("==========COMPETIÇÕES==========")
-
-        try:
-            arquivo_comp = open("Competições.txt","r")
-            conteudo_comp = arquivo_comp.read()
-            arquivo_comp.close()
-
-            if conteudo_comp.strip() =="":
-                print("Nenhuma competição cadastrada")
-            else:
-                print(conteudo_comp)
-
-        except FileNotFoundError:
-            print("Nenhuma competição cadastrada ainda.")
-                  
-        if not pergunta():
-            break
-
-
-   elif opcao_escolhida == "4":
         conteudo = abrir_leitura()
         treinos = conteudo.split("\n\n")
 
@@ -387,7 +212,7 @@ while True:
             break
 
 
-   elif opcao_escolhida == "5":
+   elif opcao_escolhida == "4":
         conteudo = abrir_leitura()
         treinos = conteudo.split("\n\n")
         
@@ -417,34 +242,9 @@ while True:
         treino.write(conjunto_fica)
         treino.close()
         print("Treino Excluído Com Sucesso!\n\n")
-        
-
-   elif opcao_escolhida == "6":
-        treinoCD = input("Digite um treino para adicionar um desempenho: ")
-        controledesempenho(treinoCD)
 
 
-   elif opcao_escolhida == "7":
-        import datetime
-        nome_comp = input("Digite o nome da competição:")
-        while True:
-            data_comp = input("Digite a data da competição (DD/MM/AAAA): ")
-            try:
-                datetime.datetime.strptime(data_comp.strip(), "%d/%m/%Y").date()
-                break
-
-            except ValueError:
-                print("Data inválida ou fora do padrão (DD/MM/AAAA). Tente novamente!\n")
-
-        local_comp = input("Digite o local da competição:")
-        cat_comp = input("Digite a categoria da competição:")
-
-        adicionar_competicao(nome_comp,data_comp,local_comp,cat_comp)
-
-        print("Competição adicionada com sucesso!\n\n")
-
-
-   elif opcao_escolhida == "8":
+   elif opcao_escolhida == "5":
         print("Programa Finalizado!")
         break
 
