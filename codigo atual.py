@@ -261,6 +261,151 @@ def adicionar_competicao(comp,data,local,cat):
     arquivo.write(dados_competicao)
     arquivo.close()
 
+def acompanhamento_evolucao():
+    from datetime import datetime
+
+    # AQQQ LE O ARQUIVO
+
+    try:
+        file = open("Sistema de Treinos.txt", "r")
+        conteudo = file.read()
+        file.close()
+    except FileNotFoundError:
+        print("Nenhum dado encontrado.")
+        return
+
+    partes = conteudo.split("\n\n")
+
+    # FREQUENCIA DE TREINO
+
+    clear()
+
+    print("========== FREQUÊNCIA DE TREINOS ==========\n")
+
+    treinos_por_mes = {}
+    total_treinos = 0
+
+    for bloco in partes:
+        if "Dados do Treino:" in bloco:
+            for linha in bloco.split("\n"):
+                if "DATA DO TREINO:" in linha:
+                    try:
+                        data_str = linha.replace("DATA DO TREINO:", "").strip()
+                        data = datetime.strptime(data_str, "%d/%m/%Y")
+                        chave = data.strftime("%m/%Y")
+                        treinos_por_mes[chave] = treinos_por_mes.get(chave, 0) + 1
+                        total_treinos += 1
+                    except ValueError:
+                        continue
+
+    if total_treinos == 0:
+        print("Nenhum treino cadastrado ainda.\n")
+    else:
+        print(f"Total de treinos realizados: {total_treinos}\n")
+        print("Treinos por mês:")
+        for mes in treinos_por_mes:
+            qtd = treinos_por_mes[mes]
+            barra = " " * qtd
+            print(f"  {mes}: {barra} ({qtd})")
+        print()
+
+    # AQQ MOSTRA A EVOLUÇÃO DO TREINO
+
+    print("========== EVOLUÇÃO DE EXERCÍCIOS ==========\n")
+
+    if "EXERCICIOS:" not in conteudo:
+        print("Nenhum exercício registrado ainda.\n")
+        return
+
+
+    secao_exercicios = conteudo.split("EXERCICIOS:")[-1]
+    blocos_treino = secao_exercicios.split("\n---\n")
+
+    exercicios_globais = {}
+
+    for bloco in blocos_treino:
+        linhas = bloco.strip().split("\n")
+        i = 1
+        while i < len(linhas) - 3:
+            nome_ex = linhas[i].strip()
+            if not nome_ex:
+                i += 1
+                continue
+
+            try:
+                tempos     = linhas[i+1].split("\t")[2:-1]
+                distancias = linhas[i+2].split("\t")[1:-1]
+                cargas     = linhas[i+3].split("\t")[2:-1]
+                repeticoes = linhas[i+4].split("\t")[1:-1]
+            except IndexError:
+                i += 1
+                continue
+
+            if nome_ex not in exercicios_globais:
+                exercicios_globais[nome_ex] = {"tempos": [], "cargas": [], "distancias": [], "repeticoes": []}
+
+            for t in tempos:
+                exercicios_globais[nome_ex]["tempos"].append(t)
+            for d in distancias:
+                exercicios_globais[nome_ex]["distancias"].append(d)
+            for c in cargas:
+                exercicios_globais[nome_ex]["cargas"].append(c)
+            for r in repeticoes:
+                exercicios_globais[nome_ex]["repeticoes"].append(r)
+
+            i += 5
+
+    if not exercicios_globais:
+        print("Nenhum exercício encontrado.\n")
+        return
+
+    for nome_ex in exercicios_globais:
+        print(f"  {nome_ex}")
+
+        metricas = [
+            ("Tempo",       exercicios_globais[nome_ex]["tempos"],      True),
+            ("Distância",   exercicios_globais[nome_ex]["distancias"],  False),
+            ("Carga",       exercicios_globais[nome_ex]["cargas"],      False),
+            ("Repetições",  exercicios_globais[nome_ex]["repeticoes"],  False)
+        ]
+
+        for nome_metrica, lista, menor_e_melhor in metricas:
+
+            valores = []
+            for v in lista:
+                if v.strip() != "":
+                    valores.append(v)
+
+            if len(valores) < 2:
+                continue
+
+            primeiro = valores[0]
+            ultimo = valores[-1]
+
+            try:
+                v1 = float(primeiro.replace(",", "."))
+                v2 = float(ultimo.replace(",", "."))
+
+                if menor_e_melhor:
+                    if v2 < v1:
+                        simbolo = "↓ MELHORA"
+                    elif v2 > v1:
+                        simbolo = "↑ PIORA"
+                    else:
+                        simbolo = "→ ESTÁVEL"
+                else:
+                    if v2 > v1:
+                        simbolo = "↑ MELHORA"
+                    elif v2 < v1:
+                        simbolo = "↓ PIORA"
+                    else:
+                        simbolo = "→ ESTÁVEL"
+
+                print(f"    {nome_metrica}: {primeiro} → {ultimo}  [{simbolo}]")
+
+            except ValueError:
+                print(f"    {nome_metrica}: {primeiro} → {ultimo}")
+    print()
 
 
 while True:
@@ -273,7 +418,8 @@ while True:
         "[5] Excluir\n"
         "[6] Controle de Desempenho\n"
         "[7] Adicionar competição \n"
-        "[8] Parar"
+        "[8] Acompanhar Evolução\n"
+        "[9] Parar"
         "\nRESPOSTA: ")
 
    clear()
@@ -525,8 +671,14 @@ while True:
 
         print("Competição adicionada com sucesso!\n\n")
 
-
+    
    elif opcao_escolhida == "8":
+       acompanhamento_evolucao()
+       input("Aperte ENTER para prosseguir! ")
+       clear()
+
+    
+   elif opcao_escolhida == "9":
         print("Programa Finalizado!")
         break
 
