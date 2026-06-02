@@ -109,16 +109,49 @@ def validar_data():
             print("Data inválida! Use o formato dd/mm/aaaa.\n")
             continue
 
+def calcular_dias_restantes(data_):
+    try:
+        data_evento = datetime.datetime.strptime(data_.strip(), "%d/%m/%Y").date()
+        data_hoje = datetime.date.today()
+        diferenca = data_evento - data_hoje
+        
+        if diferenca.days > 0:
+            return f"Faltam {diferenca.days} dias"
+        elif diferenca.days == 0:
+            return "É HOJE!"
+        else:
+            return f"Aconteceu há {abs(diferenca.days)} dias"
+    except ValueError:
+        return "Data inválida"
+
+def adicionar_competicao(comp,data,local,cat):
+
+    status_dias = calcular_dias_restantes(data)
+    
+    dados_competicao =(f"\n=========={comp}==========\n"
+                       f"DATA: {data} \t{status_dias}\n"
+                       f"LOCAL: {local}\n"
+                       f"CATEGORIA: {cat}\n")
+    
+    arquivo = open("Competições.txt","a")
+    arquivo.write(dados_competicao)
+    arquivo.close()
+
+
+arquivo = open("Sistema de Treinos.txt", "a")
+arquivo.close()
 
 while True:
    print("==========BEM VINDO AO HYROX PLANNER==========\n")
    opcao_escolhida = input("Você deseja:" 
     "\n[1] Adicionar\n"
-        "[2] Visualizar treinos\n"
-        "[3] Editar\n"
-        "[4] Excluir\n"
-        "[5] Parar"
-        "\nRESPOSTA: ")
+      "[2] Visualizar treinos\n"
+      "[3] Visualizar competições \n"
+      "[4] Editar\n"
+      "[5] Excluir\n"
+      "[6] Adicionar competição \n"
+      "[7] Parar"
+      "\nRESPOSTA: ")
 
    clear()
 
@@ -161,8 +194,36 @@ while True:
         if not pergunta():
             break
 
-
-   elif opcao_escolhida == "3":
+    elif opcao_escolhida == "3":
+            clear()
+            print("==========COMPETIÇÕES==========")
+    
+            try:
+                arquivo_comp = open("Competições.txt","r")
+                conteudo_comp = arquivo_comp.read()
+                arquivo_comp.close()
+    
+                if conteudo_comp.strip() =="":
+                    print("Nenhuma competição cadastrada")
+                else:
+                    print(conteudo_comp)
+    
+            except FileNotFoundError:
+                print("Nenhuma competição cadastrada ainda.")
+                      
+            while True:
+                resposta = input("\nVocê quer continuar? s/n \nRESPOSTA: ").lower().strip()
+                
+                if resposta == "s":
+                    clear()
+                    break
+                elif resposta == "n":
+                    print("Programa Finalizado!")
+                    exit()
+                else:
+                    print("RESPOSTA INVÁLIDA! Digite apenas 's' para sim ou 'n' para não.")
+                    
+   elif opcao_escolhida == "4":
         conteudo = abrir_leitura()
         treinos = conteudo.split("\n\n")
 
@@ -212,7 +273,7 @@ while True:
             break
 
 
-   elif opcao_escolhida == "4":
+   elif opcao_escolhida == "5":
         conteudo = abrir_leitura()
         treinos = conteudo.split("\n\n")
         
@@ -243,13 +304,33 @@ while True:
         treino.close()
         print("Treino Excluído Com Sucesso!\n\n")
 
+    elif opcao_escolhida == "6":
 
-   elif opcao_escolhida == "5":
+        nome_comp = input("Digite o nome da competição:")
+        while True:
+            data_comp = input("Digite a data da competição (DD/MM/AAAA): ")
+            try:
+
+                datetime.datetime.strptime(data_comp.strip(), "%d/%m/%Y").date()
+                break
+
+            except ValueError:
+                print("Data inválida ou fora do padrão (DD/MM/AAAA). Tente novamente!\n")
+
+        local_comp = input("Digite o local da competição:")
+        cat_comp = input("Digite a categoria da competição:")
+
+        adicionar_competicao(nome_comp,data_comp,local_comp,cat_comp)
+
+        print("Competição adicionada com sucesso!\n\n")
+
+
+    elif opcao_escolhida == "7":
         print("Programa Finalizado!")
         break
 
 
-   else:
+    else:
         print("Opção inválida!")
         if not pergunta():
             break
