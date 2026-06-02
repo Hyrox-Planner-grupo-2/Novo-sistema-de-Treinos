@@ -484,6 +484,96 @@ def acompanhamento_evolucao():
                 print(f"    {nome_metrica}: {primeiro} → {ultimo}")
     print()
 
+def sugerir_treinos_personalizados():
+    clear()
+    print("========== SUGESTÕES PERSONALIZADAS HYROX ==========\n")
+    
+    while True:
+        try:
+            nivel_op = int(input("[1] INICIANTE / [2] INTERMEDIÁRIO / [3] AVANÇADO\nDigite o seu nível atual: "))
+            if nivel_op == 1:
+                nivel = "iniciante"
+                break
+            elif nivel_op == 2:
+                nivel = "intermediario"
+                break
+            elif nivel_op == 3:
+                nivel = "avancado"
+                break
+            else:
+                print("Opção inválida!")
+        except ValueError:
+            print("Por favor, digite um número válido.")
+
+    clear()
+    
+
+    pontos_fracos = []
+    try:
+        file = open("Sistema de Treinos.txt", "r")
+        conteudo = file.read().upper()
+        file.close()
+        
+        if "SLED" in conteudo or "TRENÓ" in conteudo:
+            pontos_fracos.append("Empurrão/Puxada de Trenó")
+        if "WALL" in conteudo or "BALL" in conteudo or "BOLA" in conteudo:
+            pontos_fracos.append("Lançamento de Bola na Parede")
+        if "SKI" in conteudo:
+            pontos_fracos.append("Simulador de Esqui (SkiErg)")
+        if "BURPEE" in conteudo or "SALTO" in conteudo or "BROAD" in conteudo:
+            pontos_fracos.append("Burpee com Salto em Distância")
+        if "ROW" in conteudo or "REMO" in conteudo:
+            pontos_fracos.append("Remo")
+        if "FARMER" in conteudo or "CARRY" in conteudo or "MALAS" in conteudo or "CARREGAMENTO" in conteudo:
+            pontos_fracos.append("Caminhada do Fazendeiro")
+        if "LUNGE" in conteudo or "PASSADA" in conteudo or "AVANÇO" in conteudo or "BAG" in conteudo:
+            pontos_fracos.append("Passada com Saco de Areia")
+        if "CORRIDA" in conteudo or "RUN" in conteudo or "ESTEIRA" in conteudo or "TIRO" in conteudo:
+            pontos_fracos.append("Resistência de Corrida")
+            
+    except FileNotFoundError:
+        pass 
+
+    print(f"--- PLANO DE ESTRATÉGIA GERADO (Nível: {nivel.upper()}) ---")
+    
+    if nivel == "iniciante":
+        print("Divisão Semanal: 3 dias por semana (2x Corpo Todo focado em técnica + 1x Corrida de Recuperação).")
+        print("Cargas Ideais:   Trabalhar com 60% a 70% do peso oficial do HYROX para focar na execução correta.")
+        print("Treino Sugerido: Condicionamento de 30 minutos alternando corrida leve com agachamentos e flexões.")
+    elif nivel == "intermediario":
+        print("Divisão Semanal: 4 dias por semana (1x Força Pura, 2x Funcional Combinado, 1x Corrida Longa).")
+        print("Cargas Ideais:   Trabalhar entre 85% e 100% do peso oficial da sua categoria para ganhar potência.")
+        print("Treino Sugerido: Treino em blocos de minuto de 40 minutos (Alternando corrida, esqui e passadas com carga).")
+    elif nivel == "avancado":
+        print("Divisão Semanal: 5 dias por semana (2x Força/Potência, 2x Volume Simulado, 1x Velocidade/Intervalado).")
+        print("Cargas Ideais:   Estratégia de Sobrecarga (Treinar com 110% a 120% do peso oficial em estímulos curtos).")
+        print("Treino Sugerido: Simulado de Fadiga Acumulada (Corrida em ritmo de prova sem descanso entre as estações).")
+
+    
+    if pontos_fracos:
+        print("\nEstratégias foca-gargalo (Baseado nos exercícios do seu histórico):")
+        for pf in pontos_fracos:
+            if "Trenó" in pf:
+                print(" - Para o TRENÓ (SLED): Adicione treinos de força pura em membros inferiores (Pressione de pernas/Leg Press e Agachamento pesado).")
+            if "Parede" in pf:
+                print(" - Para o LANÇAMENTO DE BOLA (WALL BALLS): Treine a capacidade respiratória sob fadiga. Use uma bola 2kg mais pesada nos treinos.")
+            if "Esqui" in pf:
+                print(" - Para o SIMULADOR DE ESQUI (SKI): Melhore a extensão e flexão de quadril, usando o peso do corpo e não apenas a força dos braços.")
+            if "Burpee" in pf:
+                print(" - Para o BURPEE COM SALTO: Foque no ritmo constante e ritmado (pacing) e na flexibilidade de quadril para saltar mais rápido de forma eficiente.")
+            if "Remo" in pf:
+                print(" - Para o REMO: Treine a potência de tração e o controle do ritmo de remada, lembrando de empurrar o chão fortemente com as pernas.")
+            if "Fazendeiro" in pf:
+                print(" - Para a CAMINHADA DO FAZENDEIRO (FARMER'S CARRY): Fortaleça a pegada com sustentação de peso estática e treine a estabilização do abdômen e lombar.")
+            if "Passada" in pf:
+                print(" - Para a PASSADA COM SACO DE AREIA (LUNGES): Desenvolva força unilateral executando agachamento búlgaro e passadas para trás com halteres.")
+            if "Corrida" in pf:
+                print(" - Para a RESISTÊNCIA DE CORRIDA: Faça treinos intervalados de alta velocidade (tiros) e treine correr especificamente logo após exercícios pesados de perna.")
+    else:
+        print("\nDica: Conforme você cadastrar exercícios como 'Trenó', 'Esqui', 'Bola na Parede', 'Remo', 'Passada' ou 'Corrida' no Controle de Desempenho, dicas específicas aparecerão aqui!")
+
+    print("\n====================================================")
+    input("\nPressione ENTER para voltar ao menu principal...")
 
 while True:
    print("==========BEM VINDO AO HYROX PLANNER==========\n")
@@ -496,7 +586,8 @@ while True:
         "[6] Controle de Desempenho\n"
         "[7] Adicionar competição \n"
         "[8] Acompanhar Evolução\n"
-        "[9] Parar"
+        "[9] Sugestões Personalizadas\n"
+        "[10] Parar"
         "\nRESPOSTA: ")
 
    clear()
@@ -773,7 +864,12 @@ while True:
        clear()
 
     
-   elif opcao_escolhida == "9":
+   elif opcao_escolhida == "9":  
+        sugerir_treinos_personalizados()
+        clear()
+
+
+   elif opcao_escolhida == "10":
         print("Programa Finalizado!")
         break
 
