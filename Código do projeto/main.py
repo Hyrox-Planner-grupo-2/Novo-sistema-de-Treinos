@@ -93,7 +93,84 @@ def intensidadeDEtreino():
             break
     clear()
     return intensidade_final
+
+def editarOnome():
+    while True:
+        nome_treino = input(f"O nome atual é: {nome_antigo}"
+                            "\nPara permanecer com o mesmo nome clique ENTER" 
+                            "\n\nDigite o nome do treino: ").upper()
+        if nome_treino == "":
+            return nome_treino
+        else:
+            return nome_treino
+        
+def editarOtipo():
+    while True:
+
+        entrada = input(f"O tipo atual é: {tipo_antigo}\n"
+            "Para permanecer com o mesmo tipo clique ENTER\n\n"
+            "[1] CORRIDA\n"
+            "[2] FORÇA\n"
+            "[3] SIMULADO HYROX\n\n"
+            "Digite o tipo de treino: ")
+
+        if entrada == "":
+            return ""
+
+        try:
+            tipo_treino = int(entrada)
+
+            if tipo_treino == 1:
+                return "CORRIDA"
+
+            elif tipo_treino == 2:
+                return "FORÇA"
+
+            elif tipo_treino == 3:
+                return "SIMULADO HYROX"
+
+            else:
+                clear()
+                print("Digite apenas 1, 2 ou 3!\n")
+
+        except ValueError:
+            clear()
+            print("Resposta inválida!\n")
     
+def editarAintensidade():
+    while True:
+
+        entrada = input(f"A intensidade atual é: {intensidade_antiga}\n"
+            "Para permanecer com a mesma intensidade clique ENTER\n\n"
+            "[1] LEVE\n"
+            "[2] MODERADO\n"
+            "[3] PESADO\n\n"
+            "Digite a intensidade: "
+        )
+
+        if entrada == "":
+            return ""
+
+        try:
+            intensidade = int(entrada)
+
+            if intensidade == 1:
+                return "Treino Leve"
+
+            elif intensidade == 2:
+                return "Treino Moderado"
+
+            elif intensidade == 3:
+                return "Treino Pesado"
+
+            else:
+                clear()
+                print("Digite apenas 1, 2 ou 3!\n")
+
+        except ValueError:
+            clear()
+            print("Resposta inválida!\n")
+
 def validar_data():
     from datetime import datetime
     while True:
@@ -503,78 +580,98 @@ while True:
         conteudo = abrir_leitura()
         treinos = conteudo.split("\n\n")
 
-        while True:
-            try:
-                treino_antigo = input("Digite qual treino deseja editar: ")
-            except:    
-                if f"NOME DO TREINO: {treino_antigo.upper()}\n" not in conteudo:
-                    print("Treino Inexistente!!\n\n")
-                    continue
-            else:
-                clear()
+        treino_encontrado = None
+
+        treino_antigo = input("Digite qual treino deseja editar: ").upper().strip()
+
+        for treino in treinos:
+            if f"NOME DO TREINO: {treino_antigo}" in treino:
+                treino_encontrado = treino
                 break
-            
-        treino_novo = nomeDOtreino(conteudo)
 
-        # ========================================
-        # Essa parte do código procura o treino antigo no controle de desempenhos
+        if treino_encontrado is None:
+            print("Treino inexistente!")
+            continue
 
-        if "EXERCICIOS:" in treinos[-1]: 
 
-            desempenhos = (treinos[-1]).split("\n---\n")
+        linhas = treino_encontrado.split("\n")
 
-            achou = False
-            for o in range(1, len(desempenhos)):
-                if treino_antigo.lower() + "\n" in desempenhos[o]:
-                    esse_desempenho = desempenhos[o]
-                    index = o
-                    achou = True
-                    break
-            
-            if achou:
-                linhas = esse_desempenho.split("\n")
-                linhas[0] = treino_novo.lower().strip() # atualiza a primeira linha de esse_desempenho
+        nome_antigo = linhas[1].replace("NOME DO TREINO: ", "")
+        tipo_antigo = linhas[2].replace("TIPO DE TREINO: ", "")
+        data_antiga = linhas[3].replace("DATA DO TREINO: ", "")
+        duracao_antiga = linhas[4].replace("DURAÇÃO DO TREINO: ", "")
+        intensidade_antiga = linhas[5].replace("INTENSIDADE DO TREINO: ", "")
 
-                desempenhos[o] = "\n".join(linhas) # junta as linhas e coloca em desempenhoS
-
-                treinos[-1] = "\n---\n".join(desempenhos) # atualiza o último índice de treinos
-
-                # e veja só que maravilha! eu não presciso colocar < "\n\n".join(treinos) > no arquivo de volta, pq o código de vini já faz isso pra mim!
-
-        # ========================================
-
-        tipo = tipoDEtreino()
-
-        data_nova = validar_data()
         clear()
+        novo_nome = editarOnome()
 
-        duracao_nova = input("Digite o novo tempo de duração: ")
+        if novo_nome == "":
+            novo_nome = nome_antigo
+
+
         clear()
+        novo_tipo = editarOtipo()
 
-        intensidade_final = intensidadeDEtreino()
+        if novo_tipo == "":
+            novo_tipo = tipo_antigo
 
-        dados_novos = ("Dados do Treino: "
-                       "\nNOME DO TREINO: " + treino_novo.upper().strip() + 
-                       "\nTIPO DE TREINO: " + tipo +
-                       "\nDATA DO TREINO: " + data_nova + 
-                       "\nDURAÇÃO DO TREINO: " + duracao_nova + 
-                       "\nINTENSIDADE DO TREINO: " + intensidade_final)
+
+        clear()
+        from datetime import datetime
+
+        while True:
+            nova_data = input(
+                f"Data atual: {data_antiga}\n"
+                "Nova data (DD/MM/AAAA) (ENTER para manter): "
+            ).strip()
+
+            if nova_data == "":
+                nova_data = data_antiga
+                break
+
+            try:
+                datetime.strptime(nova_data, "%d/%m/%Y")
+                break
+            except ValueError:
+                clear()
+                print("Data inválida! Use o formato DD/MM/AAAA.\n")
+
+
+        clear()
+        nova_duracao = input(
+            f"Duração atual: {duracao_antiga}\nDigite ENTER para manter\n"
+            "Nova duração: ").strip()
+
+        if nova_duracao == "":
+            nova_duracao = duracao_antiga
+
+
+        clear()
+        nova_intensidade = editarAintensidade()
+
+        if nova_intensidade == "":
+            nova_intensidade = intensidade_antiga
+
+
+        dados_novos = (
+            "Dados do Treino:"
+            "\nNOME DO TREINO: " + novo_nome.upper()
+            + "\nTIPO DE TREINO: " + novo_tipo
+            + "\nDATA DO TREINO: " + nova_data
+            + "\nDURAÇÃO DO TREINO: " + nova_duracao
+            + "\nINTENSIDADE DO TREINO: " + nova_intensidade)
 
         for i in range(len(treinos)):
-            if "NOME DO TREINO: " + treino_antigo.upper().strip() + "\n" in treinos[i]: # o \n impede que vc mude treinos com nomes parecidos (Ex: braços A, braços B)
+            if f"NOME DO TREINO: {treino_antigo}" in treinos[i]:
                 treinos[i] = dados_novos
-                break
 
         novo_conteudo = "\n\n".join(treinos)
 
-        treino = open("Sistema de Treinos.txt", "w")
-        treino.write(novo_conteudo)
-        treino.close()
-        clear()
-        print("Treino editado com Sucesso!")
+        with open("Sistema de Treinos.txt", "w") as treino:
+            treino.write(novo_conteudo)
 
-        if not pergunta():
-            break
+        clear()
+        print("Treino editado com sucesso!")
 
 
    elif opcao_escolhida == "5":
@@ -644,8 +741,6 @@ while True:
         treino = open("Sistema de Treinos.txt", "r")
         conteudo = treino.read()
         if "NOME DO TREINO: " + treinoCD.upper() in conteudo:
-            # só deixa adicionar um treino ao controle de desempenho se ele existir no crude,
-            # ⚠️ mas não impede o nome de ficar diferente aqui se o treino original for renomeado ou deletado
             controledesempenho(treinoCD)
         else:
             print("Treino inexistente, adicione ele pelo CRUDE primeiro!")
