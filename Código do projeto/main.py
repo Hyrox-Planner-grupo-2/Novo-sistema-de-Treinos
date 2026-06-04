@@ -575,8 +575,35 @@ def sugerir_treinos_personalizados():
     print("\n====================================================")
     input("\nPressione ENTER para voltar ao menu principal...")
 
+def dashboard():
+
+    try:
+        arquivo = open("Sistema de Treinos.txt", "r")
+        conteudo = arquivo.read()
+        arquivo.close()
+
+        total_treinos = conteudo.count("NOME DO TREINO:")
+
+    except FileNotFoundError:
+        total_treinos = 0
+
+    try:
+        comp = open("Competições.txt", "r")
+        conteudo_comp = comp.read()
+        comp.close()
+
+        total_comp = conteudo_comp.count("==========")
+
+    except FileNotFoundError:
+        total_comp = 0
+
+    print("\t==========DASHBOARD==========\n")
+    print(f"\tTreinos cadastrados: {total_treinos}")
+    print(f"\tCompetições cadastradas: {total_comp}\n")
+    
 while True:
    print("==========BEM VINDO AO HYROX PLANNER==========\n")
+   dashboard()
    opcao_escolhida = input("Você deseja:" 
     "\n[1] Adicionar\n"
         "[2] Visualizar treinos\n"
