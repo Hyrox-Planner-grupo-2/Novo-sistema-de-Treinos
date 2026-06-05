@@ -192,45 +192,39 @@ def controledesempenho(nomedotreino):
 
     # ================= ABRE O ARQUIVO ===================
  
-    file = open("Sistema de Treinos.txt", "r")
-    conteudo = file.read()
+    try:
+        file = open("Controle_de_Desempenho.txt", "r")
+        conteudo = file.read()
+        desempenhos = (conteudo).split("\n---\n")
+    except:
+        file = open("Controle_de_Desempenho.txt", "x")
+        desempenhos = []
     file.close()
 
-    treinos = conteudo.split("\n\n")
+    achou = False #verifica se o treino existe no CDD
+    for i in range(len(desempenhos)):
+        if nomedotreino + "\n" in desempenhos[i]: #⚠️ .lower() talvez
+            esse_desempenho = desempenhos[i]
+            index = i
+            achou = True
+            break
+    
+    if achou: # se existe, colocar no dicionário pq é ela que vai ser editada
 
-    if "EXERCICIOS:" in treinos[-1]: 
-
-        desempenhos = (treinos[-1]).split("\n---\n")
-
-        achou = False
-        for i in range(1, len(desempenhos)):
-            if nomedotreino + "\n" in desempenhos[i]:
-                esse_desempenho = desempenhos[i]
-                index = i
-                achou = True
-                break
+        linhas = esse_desempenho.split("\n")
         
-        if achou:
-
-            linhas = esse_desempenho.split("\n")
-            
-            i = 1
-            while i <= len(linhas)-4:
-                desemp[linhas[i]] = [linhas[i+1].split("\t")[2:-1],
-                                    linhas[i+2].split("\t")[1:-1],
-                                    linhas[i+3].split("\t")[2:-1],
-                                    linhas[i+4].split("\t")[1:-1]]
-                i += 5
+        i = 1
+        while i <= len(linhas)-4:
+            desemp[linhas[i]] = [linhas[i+1].split("\t")[3:-1],
+                                linhas[i+2].split("\t")[2:-1],
+                                linhas[i+3].split("\t")[3:-1], # 2 e 1 por causa do numero de \t (virou 3 e 2 pq eu coloquei um tab a mais)
+                                linhas[i+4].split("\t")[2:-1]]
+            i += 5
         
-        else:
-            desempenhos.append("valor que vai ser trocado dps")
-            index = len(desempenhos)-1
-                
-    else:
-        desempenhos = ["EXERCICIOS:", "valor que vai ser trocado dps"]
-        index = 1
-        treinos.append(desempenhos)
-
+    else: # se n existe, coloca uma sring vazia no desempenhos pra editar ela
+        desempenhos.append("")
+        index = len(desempenhos)-1
+        # nn prescisa declarar o dicionario aqui pq ele ja lida com isso em add()
 
     # ====================== ADICIONAR NOVA LEITURA / CRIAR EXERCICIO =============
 
@@ -255,36 +249,39 @@ def controledesempenho(nomedotreino):
     # ====================== SALVAR MATRIZ =========================
 
     def salvarmatriz():
+        if desemp.keys() == []: #só vai acontecer se o treino não existia antes
+            return "oxi fez nada vou escrever pra que tu é doido"
+        
         dados = nomedotreino
-
+        
         for exercicio in desemp.keys():
             dados += "\n" + exercicio.upper()
 
-            dados += ("\nTempos:\t\t")
-            for d in desemp[exercicio][0]:
+            dados += ("\n\tTempos:\t\t")
+            for d in desemp[exercicio][0]: #⚠️coloquei um tab a mais
                 dados += (d + "\t")
 
-            dados += ("\nDistâncias:\t")
+            dados += ("\n\tDistâncias:\t")
             for d in desemp[exercicio][1]:
                 dados += (d + "\t")
 
-            dados += ("\nCargas:\t\t")
+            dados += ("\n\tCargas:\t\t")
             for d in desemp[exercicio][2]:
                 dados += (d + "\t")
 
-            dados += ("\nRepetições:\t")
+            dados += ("\n\tRepetições:\t")
             for d in desemp[exercicio][3]:
                 dados += (d + "\t")
         
         desempenhos[index] = dados
 
-        treinos.pop()
-        treinos.append("\n---\n".join(desempenhos))
+        #treinos.pop()
+        #treinos.append("\n---\n".join(desempenhos)) #⚠️comentario pra teste deletar dps (esse pode)
 
-        conteudo = "\n\n".join(treinos)
+        conteudo = "\n---\n".join(desempenhos)
 
 
-        file = open("Sistema de Treinos.txt", "w")
+        file = open("Controle_de_Desempenho.txt", "w")
         file.write(conteudo)
         file.close()
         
@@ -669,6 +666,13 @@ while True:
         treino = open("Sistema de Treinos.txt", "r")
         print(treino.read())
         treino.close()
+        try:
+            with open("Controle_de_Desempenho.txt", "r") as cdd:
+                if len(cdd.read()) > 10: #usando len() ao invez de == "" or == "\n" pra evitar variações desses (ex. "\n\n\n")
+                    print("\n===Controle de Desempenhos===")
+                    print(cdd.read())
+        except:
+            pass
         if not pergunta():
             break
 
@@ -703,7 +707,7 @@ while True:
         treino_antigo = input("Digite qual treino deseja editar: ").upper().strip()
 
         for treino in treinos:
-            if f"NOME DO TREINO: {treino_antigo}" in treino:
+            if f"NOME DO TREINO: {treino_antigo}\n" in treino:
                 treino_encontrado = treino
                 break
 
@@ -725,6 +729,40 @@ while True:
 
         if novo_nome == "":
             novo_nome = nome_antigo
+        else:
+
+        # ========================================
+        # Essa parte do código procura o treino antigo no controle de desempenhos
+
+            try:
+                file = open("Controle_de_Desempenho.txt", "r")
+                conteudocdd = file.read()
+                file.close()
+
+                desempenhos = conteudocdd.split("\n---\n")
+
+                achou = False
+                for o in range(len(desempenhos)):
+                    if treino_antigo.lower() + "\n" in desempenhos[o]:
+                        esse_desempenho = desempenhos[o] #nesse caso, como eu só presciso deletar, não tem motivo pra dividir esse desempenho em linhas
+                        index = o
+                        achou = True
+                        break
+                
+                if achou:
+                    linhas = esse_desempenho.split("\n")
+                    linhas[0] = novo_nome.lower()
+                    desempenhos[o] = "\n".join(linhas)
+                
+                    conteudocdd = "\n---\n".join(desempenhos)
+                    file = open("Controle_de_Desempenho.txt", "w")
+                    file.write(conteudocdd)
+                    file.close()
+
+            except: #controle de desempenho não existe
+                pass
+
+        # ========================================
 
 
         clear()
@@ -797,43 +835,42 @@ while True:
         treinos = conteudo.split("\n\n")
         
         while True: 
-            try:
-                treino_excluir = input("Digite o treino que deseja excluir: ")
-            except:  
-                if f"NOME DO TREINO: " + treino_excluir.upper().strip() not in conteudo:
+            treino_excluir = input("Digite o treino que deseja excluir: ")
+            if f"NOME DO TREINO: " + treino_excluir.upper().strip() + "\n" not in conteudo:
                     clear()
                     print("Treino inexistente!\n")
                     continue
             else:
                 clear()
                 break
-        
+            
         # ========================================
         # Essa parte do código procura o treino antigo no controle de desempenhos
 
-        if "EXERCICIOS:" in treinos[-1]: 
+        try:
+            file = open("Controle_de_Desempenho.txt", "r")
+            conteudocdd = file.read()
 
-            desempenhos = (treinos[-1]).split("\n---\n")
+            desempenhos = conteudocdd.split("\n---\n")
 
             achou = False
-            for o in range(1, len(desempenhos)):
+            for o in range(len(desempenhos)):
                 if treino_excluir.lower() + "\n" in desempenhos[o]:
-                    #esse_desempenho = desempenhos[i] #nesse caso, como eu só presciso deletar, não tem motivo pra dividir esse desempenho em linhas
                     index = o
                     achou = True
                     break
             
             if achou:
                 
-                if len(desempenhos) <= 2: 
-                    treinos.pop(-1) # se desempenhos for ["EXERCICIOS:", desempenhos[i]], é melhor deletar tudo logo do que deixar só "EXERCICIOS:" no final do arquivo
+                desempenhos.pop(o) # remove esse desempenho
+                
+                conteudocdd = "\n---\n".join(desempenhos)
+                file = open("Controle_de_Desempenho.txt", "w")
+                file.write(conteudocdd)
+                file.close()
 
-                else:
-                    desempenhos.pop(o) # remove esse desempenho
-                    
-                    treinos[-1] = "\n---\n".join(desempenhos) # atualiza o último índice de treinos
-
-                    # e, denovo, nn prescisa atualizar o arquivo aqui
+        except:
+            pass
 
         # ========================================
 
@@ -905,4 +942,3 @@ while True:
         print("Opção inválida!")
         if not pergunta():
             break
-
