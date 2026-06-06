@@ -1,29 +1,31 @@
 import os 
 import platform
+#o platform é para que o computador reconheça o sistema operacional usado.
 
 arquivo = open("Sistema de Treinos.txt", "a")
 arquivo.close()
+#para garantir que o arquivo sempre exista
 
 def clear():
     OS = platform.system()
-    if OS == "Darwin":
+    if OS == "Darwin": #Darwin é o nome de dispositivos apple
         os.system("clear")
     else:
         os.system("cls")
 
 clear()
 
-def abrir_leitura():
+def abrir_leitura(): #sempre que precisar ser aberto pra ler
     treino = open("Sistema de Treinos.txt", "r")
     conteudo = treino.read()
     treino.close()
 
     return conteudo
 
-def pergunta():
+def pergunta(): #a pergunta de continuação do sistema
     while True:
         resposta = input("Você quer continuar? s/n \nRESPOSTA: ").lower()
-
+        #devolver valores booleanos para identificar a resposta
         if resposta == "s":
             clear()
             return True
@@ -38,7 +40,7 @@ def nomeDOtreino(conteudo):
         try:
             nome_treino = input("Digite o nome do treino: ")
         except:
-            if f"NOME DO TREINO: {nome_treino.upper().strip()}" in conteudo:
+            if f"NOME DO TREINO: {nome_treino.upper().strip()}" in conteudo: #UPPER deixa tudo em maiusculo e STRIP tira os espaços em branco
                 print("O treino ja existe!\n")
                 continue
         else:
@@ -99,7 +101,7 @@ def editarOnome():
         nome_treino = input(f"O nome atual é: {nome_antigo}"
                             "\nPara permanecer com o mesmo nome clique ENTER" 
                             "\n\nDigite o nome do treino: ").upper()
-        if nome_treino == "":
+        if nome_treino == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
             return nome_treino
         else:
             return nome_treino
@@ -114,7 +116,7 @@ def editarOtipo():
             "[3] SIMULADO HYROX\n\n"
             "Digite o tipo de treino: ")
 
-        if entrada == "":
+        if entrada == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
             return ""
 
         try:
@@ -148,7 +150,7 @@ def editarAintensidade():
             "Digite a intensidade: "
         )
 
-        if entrada == "":
+        if entrada == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
             return ""
 
         try:
@@ -176,7 +178,7 @@ def validar_data():
     while True:
         try:
             data = input("Digite a data do treino (dd/mm/aaaa): ")
-            data_formatada = datetime.strptime(data, "%d/%m/%Y")
+            data_formatada = datetime.strptime(data, "%d/%m/%Y") #para que so aceite o formato de data
 
             clear()
             return data
@@ -618,7 +620,7 @@ while True:
 
    if opcao_escolhida == "1":
     
-        conteudo = abrir_leitura()
+        conteudo = abrir_leitura() #variavel com o conteudo do arquivo
 
         nome_treino = nomeDOtreino(conteudo)
 
@@ -700,24 +702,25 @@ while True:
 
    elif opcao_escolhida == "4":
         conteudo = abrir_leitura()
-        treinos = conteudo.split("\n\n")
+        treinos = conteudo.split("\n\n") #separa tudo do rquivo em listas a partir dos \n duplo
 
         treino_encontrado = None
 
-        treino_antigo = input("Digite qual treino deseja editar: ").upper().strip()
+        treino_antigo = input("Digite qual treino deseja editar: ").upper().strip() #UPPER deixa tutdo em maiusculo e STRIP tira os espaços
 
-        for treino in treinos:
+        for treino in treinos: #procura o treino no arquivo
             if f"NOME DO TREINO: {treino_antigo}\n" in treino:
                 treino_encontrado = treino
                 break
 
-        if treino_encontrado is None:
+        if treino_encontrado is None: #não encontrou
             print("Treino inexistente!")
             continue
 
 
-        linhas = treino_encontrado.split("\n")
+        linhas = treino_encontrado.split("\n")# separa a lista encontrada em outras pequenas listas por linhas
 
+        #põe os valores antigos em variaveis caso seja necessário usar
         nome_antigo = linhas[1].replace("NOME DO TREINO: ", "")
         tipo_antigo = linhas[2].replace("TIPO DE TREINO: ", "")
         data_antiga = linhas[3].replace("DATA DO TREINO: ", "")
@@ -726,7 +729,7 @@ while True:
 
         clear()
         novo_nome = editarOnome()
-
+        # se apertar ENTER continua o mesmo
         if novo_nome == "":
             novo_nome = nome_antigo
         else:
@@ -767,7 +770,7 @@ while True:
 
         clear()
         novo_tipo = editarOtipo()
-
+         # se apertar ENTER continua o mesmo
         if novo_tipo == "":
             novo_tipo = tipo_antigo
 
@@ -780,13 +783,13 @@ while True:
                 f"Data atual: {data_antiga}\n"
                 "Nova data (DD/MM/AAAA) (ENTER para manter): "
             ).strip()
-
+             # se apertar ENTER continua o mesmo
             if nova_data == "":
                 nova_data = data_antiga
                 break
 
             try:
-                datetime.strptime(nova_data, "%d/%m/%Y")
+                datetime.strptime(nova_data, "%d/%m/%Y") #so permite datas válidas e existentes
                 break
             except ValueError:
                 clear()
@@ -798,6 +801,7 @@ while True:
             f"Duração atual: {duracao_antiga}\nDigite ENTER para manter\n"
             "Nova duração: ").strip()
 
+         # se apertar ENTER continua o mesmo
         if nova_duracao == "":
             nova_duracao = duracao_antiga
 
@@ -805,6 +809,7 @@ while True:
         clear()
         nova_intensidade = editarAintensidade()
 
+         # se apertar ENTER continua o mesmo
         if nova_intensidade == "":
             nova_intensidade = intensidade_antiga
 
@@ -821,6 +826,7 @@ while True:
             if f"NOME DO TREINO: {treino_antigo}" in treinos[i]:
                 treinos[i] = dados_novos
 
+        #retransforma a lista em string
         novo_conteudo = "\n\n".join(treinos)
 
         with open("Sistema de Treinos.txt", "w") as treino:
@@ -832,11 +838,11 @@ while True:
 
    elif opcao_escolhida == "5":
         conteudo = abrir_leitura()
-        treinos = conteudo.split("\n\n")
+        treinos = conteudo.split("\n\n") #transforma em listas
         
         while True: 
             treino_excluir = input("Digite o treino que deseja excluir: ")
-            if f"NOME DO TREINO: " + treino_excluir.upper().strip() + "\n" not in conteudo:
+            if f"NOME DO TREINO: " + treino_excluir.upper().strip() + "\n" not in conteudo: #procura o treino nas listas
                     clear()
                     print("Treino inexistente!\n")
                     continue
@@ -874,7 +880,7 @@ while True:
 
         # ========================================
 
-        conjunto_fica = []
+        conjunto_fica = [] #armazena todo o resto que nao foi excluido
         
         for i in range(len(treinos)):
             if "NOME DO TREINO: " + treino_excluir.upper().strip() in treinos[i]:
