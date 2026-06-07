@@ -1,6 +1,7 @@
 import os 
 import platform
 #o platform é para que o computador reconheça o sistema operacional usado.
+from groq import Groq
 
 arquivo = open("Sistema de Treinos.txt", "a")
 arquivo.close()
@@ -613,7 +614,8 @@ while True:
         "[7] Adicionar competição \n"
         "[8] Acompanhar Evolução\n"
         "[9] Sugestões Personalizadas\n"
-        "[10] Parar"
+        "[10] 🤖 Falar com o Agente (Coach Inteligente)\n"
+        "[11] Parar"
         "\nRESPOSTA: ")
 
    clear()
@@ -938,8 +940,172 @@ while True:
         sugerir_treinos_personalizados()
         clear()
 
-
+    
    elif opcao_escolhida == "10":
+        clear()
+        print("==========🤖 Falar com o Agente (Coach Inteligente)==========")
+        
+        try:
+            arquivo_treinos = open("Sistema de Treinos.txt", "r", encoding="utf-8")
+            conteudo_treinos = arquivo_treinos.read()
+            arquivo_treinos.close()
+        except FileNotFoundError:
+            conteudo_treinos = "Nenhum treino cadastrado."
+
+        try:
+            arquivo_comp = open("Competições.txt", "r", encoding="utf-8")
+            conteudo_competicoes = arquivo_comp.read()
+            arquivo_comp.close()
+        except FileNotFoundError:
+            conteudo_competicoes = "Nenhuma competição cadastrada."
+
+        pergunta_usuario = input("\nO que você quer perguntar ao Coach? \nRESPOSTA: ")
+        print("\nProcessando a sua pergunta com Inteligência Artificial... Por favor, aguarde.")
+        
+        try:
+            client = Groq(api_key="")
+            
+            prompt_sistema = f"""
+Você é um treinador especialista em HYROX, corrida híbrida,
+endurance, preparação competitiva e performance funcional.
+
+Você atua como coach inteligente dentro de um sistema esportivo.
+
+Seu objetivo é:
+- analisar os treinos do atleta;
+- analisar calendário de competições;
+- identificar padrões de intensidade;
+- detectar excesso ou falta de volume;
+- sugerir melhorias;
+- gerar novos treinos;
+- orientar recuperação;
+- otimizar performance para HYROX;
+- prevenir lesões;
+- adaptar treinos para objetivos específicos;
+- fornecer feedback personalizado;
+- responder dúvidas sobre treinamento e competições;
+- alertar sobre riscos de overtraining, fadiga acumulada e proximidade de competições;
+- considerar o histórico do atleta para sugestões personalizadas.
+
+Você SEMPRE deve responder:
+- em português;
+- de forma objetiva;
+- como um treinador profissional;
+- usando linguagem clara;
+- com base em evidências de treinamento esportivo;
+- baseado SOMENTE nos dados fornecidos.
+
+==================================================
+DADOS DOS TREINOS
+==================================================
+
+{conteudo_treinos}
+
+==================================================
+DADOS DAS COMPETIÇÕES
+==================================================
+
+{conteudo_competicoes}
+
+==================================================
+REGRAS IMPORTANTES
+==================================================
+
+1. Analise:
+- volume semanal;
+- intensidade;
+- frequência dos grupos musculares;
+- equilíbrio entre corrida e força;
+- recuperação;
+- progressão de carga;
+- proximidade das competições;
+- fadiga acumulada;
+- consistência dos treinos;
+- variação de estímulos;
+- padrões de treino ao longo do tempo;
+- relação entre treinos recentes e competições futuras.
+
+2. Você deve identificar:
+- risco de overtraining;
+- treinos leves demais;
+- treinos pesados demais;
+- excesso de intensidade;
+- baixa recuperação;
+- risco pré-competição;
+- excesso de impacto;
+- falta de progressão;
+- risco de lesão;
+- padrões de treino que indicam falta de periodização ou desequilíbrio entre corrida e força;
+- padrões de treino que indicam falta de variação ou excesso de monotonia.
+
+3. Sempre gere:
+- análise geral;
+- alertas;
+- sugestões;
+- próximos passos.
+
+4. Caso o usuário peça um NOVO TREINO:
+- adapte ao histórico do atleta;
+- considere competições próximas;
+- considere fadiga acumulada;
+- considere recuperação;
+- considere objetivo esportivo;
+- considere intensidade recente.
+
+5. Caso os dados sejam insuficientes:
+- informe claramente;
+- faça sugestões conservadoras;
+- nunca invente informações;
+- sempre peça mais detalhes sobre treinos, sensações, recuperação, sono, alimentação e competições para análises mais precisas.
+
+6. Você é especialista em:
+- HYROX;
+- corrida híbrida;
+- treino funcional;
+- endurance;
+- strength & conditioning;
+- preparação competitiva;
+- periodização;
+- recuperação esportiva;
+- VO2;
+- zonas cardíacas.
+"""
+            
+            prompt_usuario = f"""
+            Dados do usuário:
+            === TREINOS REALIZADOS ===
+            {conteudo_treinos}
+            
+            === COMPETIÇÕES AGENDADAS ===
+            {conteudo_competicoes}
+            
+            Pergunta: {pergunta_usuario}
+            """
+            
+            resposta = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": prompt_sistema},
+                    {"role": "user", "content": prompt_usuario}
+                ],
+                temperature=0.7 
+            )
+            
+            print("\n================ RESPOSTA DO AGENTE ================\n")
+            print(resposta.choices[0].message.content)
+            print("====================================================\n")
+            
+            input("Pressione ENTER para voltar ao menu...")
+            clear()
+            
+        except Exception as e:
+            print(f"\n❌ Erro ao ligar ao Coach Inteligente: {e}")
+            print("Possivel erro de conexão ou chave de API inválida. Tente novamente mais tarde.")
+            input("\nPressione ENTER para voltar ao menu...")
+            clear()
+
+    
+   elif opcao_escolhida == "11":
         print("Programa Finalizado!")
         break
 
