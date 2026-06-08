@@ -291,28 +291,36 @@ def controledesempenho(nomedotreino):
     # ====================== LOOP PRINCIPAL =========================
 
     print("EXERCICIOS e Controle de Desempenho\n")
-    #opcoes = [exercicio1, exercicio2, ...]
+    opcoes = ["SLED", "TRENÓ",
+              "WALL", "BALL", "BOLA",
+              "SKI",
+              "BURPEE", "SALTO", "BROAD",
+              "ROW", "REMO",
+              "FARMER", "CARRY", "MALAS", "CARREGAMENTO",
+              "LUNGE", "PASSADA", "AVANÇO", "BAG",
+              "CORRIDA", "RUN", "ESTEIRA", "TIRO"
+             ]
 
     cmd = "S"
     while True:
         if cmd == "S":
             clear()
-            #print("Opções de exercício:", *opcoes, sep="\n- ")
+            print("Opções de exercício:", *opcoes, sep="\n- ")
             nome = input("\nDigite o nome do exercício que deseja adicionar/atualizar: ").upper()
             
             # ======= essa parte verifica se o exercicio sendo adicionado existe na parte de ferreira
-            #denovo = "S"
+            denovo = "S"
             valido = True
-            #while (nome not in opcoes) and (denovo = "S"):
-            #    valido = False
-            #    denovo = input(f"Exercicio \"{nome}\" não reconhecido, deseja tentar novamente? (S/N) ")
-            #    if denovo == "N":
-            #        break
-            #    elif denovo == "S":
-            #        continue #continue é o comando que volta pro inicio do loop ne?
-            #    else:
-            #        print(f"Comando \"{denovo}\" não reconhecido, digite apenas \"S\" ou \"N\".")
-            #        continue
+            while (nome not in opcoes) and (denovo == "S"):
+                valido = False
+                denovo = input(f"Exercicio \"{nome}\" não reconhecido, deseja tentar novamente? (S/N) ")
+                if denovo == "N":
+                    break
+                elif denovo == "S":
+                    continue #continue é o comando que volta pro inicio do loop ne?
+                else:
+                    print(f"Comando \"{denovo}\" não reconhecido, digite apenas \"S\" ou \"N\".")
+                    continue
             # ========
             
             if valido:
