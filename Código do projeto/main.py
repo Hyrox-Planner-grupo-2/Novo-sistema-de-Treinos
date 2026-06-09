@@ -239,7 +239,7 @@ def controledesempenho(nomedotreino):
         desemp[exercicio][2].append(carga)
         desemp[exercicio][3].append(rep)
 
-        print(f"Exercício {exercicio} atualizado!\n")
+        print(f"Exercício {exercicio} updated!\n")
 
     # ====================== SALVAR MATRIZ =========================
 
@@ -356,7 +356,6 @@ def acompanhamento_evolucao():
     from datetime import datetime
 
     # AQQQ LE O ARQUIVO
-
     try:
         conteudo = abrir_leitura()
     except FileNotFoundError:
@@ -366,9 +365,7 @@ def acompanhamento_evolucao():
     partes = conteudo.split("\n\n")
 
     # FREQUENCIA DE TREINO
-
     clear()
-
     print("========== FREQUÊNCIA DE TREINOS ==========\n")
 
     treinos_por_mes = {}
@@ -377,9 +374,9 @@ def acompanhamento_evolucao():
     for bloco in partes:
         if "Dados do Treino:" in bloco:
             for linha in bloco.split("\n"):
-                if "DATA DO TREINO:" in linha:
+                if "DATA DO TRINO:" in linha or "DATA DO TREINO:" in linha:
                     try:
-                        data_str = linha.replace("DATA DO TREINO:", "").strip()
+                        data_str = linha.replace("DATA DO TRINO:", "").replace("DATA DO TREINO:", "").strip()
                         data = datetime.strptime(data_str, "%d/%m/%Y")
                         chave = data.strftime("%m/%Y")
                         treinos_por_mes[chave] = treinos_por_mes.get(chave, 0) + 1
@@ -398,37 +395,46 @@ def acompanhamento_evolucao():
             print(f"  {mes}: {barra} ({qtd})")
         print()
 
-    # AQQ MOSTRA A EVOLUÇÃO DO EXERCICIO
-    file = open("Controle_de_Desempenho.txt", "r")
-    cont_exerc = file.read()
-    file.close()
-
+    # AQQ MOSTRA A EVOLUÇÃO DO EXERCICIO - LENDO DO CONTROLE DE DESEMPENHO
     print("========== EVOLUÇÃO DE EXERCÍCIOS ==========\n")
+    try:
+        file = open("Controle_de_Desempenho.txt", "r")
+        cont_exerc = file.read()
+        file.close()
+    except FileNotFoundError:
+        print("Nenhum histórico de desempenho encontrado.\n")
+        return
 
-    if "EXERCICIOS:" not in cont_exerc:
+    if not cont_exerc.strip():
         print("Nenhum exercício registrado ainda.\n")
         return
 
-
-    secao_exercicios = cont_exerc.split("EXERCICIOS:")[-1]
-    blocos_treino = secao_exercicios.split("\n---\n")
-
+    blocos_treino = cont_exerc.split("\n---\n")
     exercicios_globais = {}
 
     for bloco in blocos_treino:
         linhas = bloco.strip().split("\n")
+        if len(linhas) < 2:
+            continue
+        
         i = 1
-        while i < len(linhas) - 3:
+        while i < len(linhas):
             nome_exerc = linhas[i].strip()
-            if not nome_exerc:
+            if not nome_exerc or nome_exerc.startswith("Tempos:") or nome_exerc.startswith("Distâncias:") or nome_exerc.startswith("Cargas:") or nome_exerc.startswith("Repetições:"):
                 i += 1
                 continue
 
             try:
-                tempos     = linhas[i+1].split("\t")[2:-1]
-                distancias = linhas[i+2].split("\t")[1:-1]
-                cargas     = linhas[i+3].split("\t")[2:-1]
-                repeticoes = linhas[i+4].split("\t")[1:-1]
+                tempos     = linhas[i+1].replace("Tempos:", "").split("\t")
+                distancias = linhas[i+2].replace("Distâncias:", "").split("\t")
+                cargas     = linhas[i+3].replace("Cargas:", "").split("\t")
+                repeticoes = lines[i+4].replace("Repetições:", "").split("\t")
+                
+                # Filtrar strings vazias geradas pelos tabs
+                tempos = [t.strip() for t in tempos if t.strip()]
+                distancias = [d.strip() for d in distancias if d.strip()]
+                cargas = [c.strip() for c in cargas if c.strip()]
+                repeticoes = [r.strip() for r in repeticoes if r.strip()]
             except IndexError:
                 i += 1
                 continue
@@ -436,41 +442,35 @@ def acompanhamento_evolucao():
             if nome_exerc not in exercicios_globais:
                 exercicios_globais[nome_exerc] = {"tempos": [], "cargas": [], "distancias": [], "repeticoes": []}
 
-            for t in tempos:
-                exercicios_globais[nome_exerc]["tempos"].append(t)
-            for d in distancias:
-                exercicios_globais[nome_exerc]["distancias"].append(d)
-            for c in cargas:
-                exercicios_globais[nome_exerc]["cargas"].append(c)
-            for r in repeticoes:
-                exercicios_globais[nome_exerc]["repeticoes"].append(r)
+            exercicios_globais[nome_exerc]["tempos"].extend(tempos)
+            exercicios_globais[nome_exerc]["distancias"].extend(distancias)
+            exercicios_globais[nome_exerc]["cargas"].extend(cargas)
+            exercicios_globais[nome_exerc]["repeticoes"].extend(repeticoes)
 
             i += 5
 
     if not exercicios_globais:
-        print("Nenhum exercício encontrado.\n")
+        print("Nenhum exercício estruturado encontrado no histórico.\n")
         return
 
     for nome_ex in exercicios_globais:
         print(f"  {nome_ex}")
 
         metricas = [
-            ("Tempo",       exercicios_globais[nome_exerc]["tempos"],      True),
-            ("Distância",   exercicios_globais[nome_exerc]["distancias"],  False),
-            ("Carga",       exercicios_globais[nome_exerc]["cargas"],      False),
-            ("Repetições",  exercicios_globais[nome_exerc]["repeticoes"],  False)
+            ("Tempo",       exercicios_globais[nome_ex]["tempos"],      True),
+            ("Distância",   exercicios_globais[nome_ex]["distancias"],  False),
+            ("Carga",       exercicios_globais[nome_ex]["cargas"],      False),
+            ("Repetições",  exercicios_globais[nome_ex]["repeticoes"],  False)
         ]
 
+        possui_dados = False
         for nome_metrica, lista, menor_e_melhor in metricas:
-
-            valores = []
-            for v in lista:
-                if v.strip() != "":
-                    valores.append(v)
+            valores = [v for v in lista if v.strip() != ""]
 
             if len(valores) < 2:
                 continue
-
+            
+            possui_dados = True
             primeiro = valores[0]
             ultimo = valores[-1]
 
@@ -497,6 +497,9 @@ def acompanhamento_evolucao():
 
             except ValueError:
                 print(f"    {nome_metrica}: {primeiro} → {ultimo}")
+                
+        if not possui_dados:
+            print("    Sem dados históricos suficientes para calcular evolução técnica.")
     print()
 
 def sugerir_treinos_personalizados():
@@ -751,10 +754,10 @@ while True:
 
         #põe os valores antigos em variaveis caso seja necessário usar
         nome_antigo = linhas[1].replace("NOME DO TREINO: ", "")
-        tipo_antigo = linhas[2].replace("TIPO DE TREINO: ", "")
-        data_antiga = linhas[3].replace("DATA DO TREINO: ", "")
-        duracao_antiga = linhas[4].replace("DURAÇÃO DO TREINO: ", "")
-        intensidade_antiga = linhas[5].replace("INTENSIDADE DO TREINO: ", "")
+        tipo_antigo = lines[2].replace("TIPO DE TREINO: ", "")
+        data_antiga = lines[3].replace("DATA DO TREINO: ", "")
+        duracao_antiga = lines[4].replace("DURAÇÃO DO TREINO: ", "")
+        intensidade_antiga = lines[5].replace("INTENSIDADE DO TREINO: ", "")
 
         clear()
         novo_nome = editarOnome()
@@ -960,6 +963,7 @@ while True:
             break
     
    elif opcao_escolhida == "8":
+       # Acompanhar Evolução integrado com Controle de Desempenho
        acompanhamento_evolucao()
        input("Aperte ENTER para prosseguir! ")
        clear()
@@ -1052,7 +1056,7 @@ REGRAS IMPORTANTES
 - consistência dos treinos;
 - variação de estímulos;
 - padrões de treino ao longo do tempo;
-- relação entre treinos recentes e competições futuras.
+- relação entre treinos recentes e competições futures.
 
 2. Você deve identificar:
 - risco de overtraining;
