@@ -582,10 +582,10 @@ def sugerir_treinos_personalizados():
                 print(" - Para a CAMINHADA DO FAZENDEIRO (FARMER'S CARRY): Fortaleça a pegada com sustentação de peso estática e treine a estabilização do abdômen e lombar.")
             if "Passada" in pf:
                 print(" - Para a PASSADA COM SACO DE AREIA (LUNGES): Desenvolva força unilateral executando agachamento búlgaro e passadas para trás com halteres.")
-            if "Corrida" in pf:
+            if "Run" in pf:
                 print(" - Para a RESISTÊNCIA DE CORRIDA: Faça treinos intervalados de alta velocidade (tiros) e treine correr especificamente logo após exercícios pesados de perna.")
     else:
-        print("\nDica: Conforme você cadastrar exercícios como 'Trenó', 'Esqui', 'Bola na Parede', 'Remo', 'Passada' ou 'Corrida' no Controle de Desempenho, dicas específicas aparecerão aqui!")
+        print("\nDica: Conforme você cadastrar exercícios como 'Trenó', 'Esqui', 'Bola na Parede', 'Remo', 'Passada' ou 'Run' no Controle de Desempenho, dicas específicas aparecerão aqui!")
 
     print("\n====================================================")
     input("\nPressione ENTER para voltar ao menu principal...")
