@@ -428,7 +428,7 @@ def acompanhamento_evolucao():
                 tempos     = linhas[i+1].replace("Tempos:", "").split("\t")
                 distancias = linhas[i+2].replace("Distâncias:", "").split("\t")
                 cargas     = linhas[i+3].replace("Cargas:", "").split("\t")
-                repeticoes = lines[i+4].replace("Repetições:", "").split("\t")
+                repeticoes = linhas[i+4].replace("Repetições:", "").split("\t")
                 
                 # Filtrar strings vazias geradas pelos tabs
                 tempos = [t.strip() for t in tempos if t.strip()]
@@ -754,10 +754,10 @@ while True:
 
         #põe os valores antigos em variaveis caso seja necessário usar
         nome_antigo = linhas[1].replace("NOME DO TREINO: ", "")
-        tipo_antigo = lines[2].replace("TIPO DE TREINO: ", "")
-        data_antiga = lines[3].replace("DATA DO TREINO: ", "")
-        duracao_antiga = lines[4].replace("DURAÇÃO DO TREINO: ", "")
-        intensidade_antiga = lines[5].replace("INTENSIDADE DO TREINO: ", "")
+        tipo_antigo = linhas[2].replace("TIPO DE TREINO: ", "")
+        data_antiga = linhas[3].replace("DATA DO TREINO: ", "")
+        duracao_antiga = linhas[4].replace("DURAÇÃO DO TREINO: ", "")
+        intensidade_antiga = linhas[5].replace("INTENSIDADE DO TREINO: ", "")
 
         clear()
         novo_nome = editarOnome()
@@ -996,7 +996,7 @@ while True:
         print("\nProcessando a sua pergunta com Inteligência Artificial... Por favor, aguarde.")
         
         try:
-            #client = Groq(api_key="")
+            client = Groq(api_key="")
             
             prompt_sistema = f"""
 Você é um treinador especialista em HYROX, corrida híbrida,
