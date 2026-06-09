@@ -286,7 +286,7 @@ def controledesempenho(nomedotreino):
               "ROW", "REMO",
               "FARMER", "CARRY", "MALAS", "CARREGAMENTO",
               "LUNGE", "PASSADA", "AVANÇO", "BAG",
-              "CORRIDA", "RUN", "ESTEIRA", "TIRO"
+              "RUN", "ESTEIRA", "TIRO"
              ]
 
     cmd = "S"
@@ -525,7 +525,7 @@ def sugerir_treinos_personalizados():
 
     pontos_fracos = []
     try:
-        file = open("Sistema de Treinos.txt", "r")
+        file = open("Controle_de_Desempenho.txt", "r")
         conteudo = file.read().upper()
         file.close()
         
@@ -543,7 +543,7 @@ def sugerir_treinos_personalizados():
             pontos_fracos.append("Caminhada do Fazendeiro")
         if "LUNGE" in conteudo or "PASSADA" in conteudo or "AVANÇO" in conteudo or "BAG" in conteudo:
             pontos_fracos.append("Passada com Saco de Areia")
-        if "CORRIDA" in conteudo or "RUN" in conteudo or "ESTEIRA" in conteudo or "TIRO" in conteudo:
+        if "RUN" in conteudo or "ESTEIRA" in conteudo or "TIRO" in conteudo:
             pontos_fracos.append("Resistência de Corrida")
             
     except FileNotFoundError:
