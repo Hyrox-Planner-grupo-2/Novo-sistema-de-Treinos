@@ -358,7 +358,7 @@ def acompanhamento_evolucao():
     # AQQQ LE O ARQUIVO
 
     try:
-        abrir_leitura()
+        conteudo = abrir_leitura()
     except FileNotFoundError:
         print("Nenhum dado encontrado.")
         return
@@ -932,7 +932,7 @@ while True:
         if "NOME DO TREINO: " + treinoCD.upper() in conteudo:
             controledesempenho(treinoCD)
         else:
-            clear
+            clear()
             print("Treino inexistente, adicione ele pelo CRUDE primeiro!")
             if not pergunta():
                 break
