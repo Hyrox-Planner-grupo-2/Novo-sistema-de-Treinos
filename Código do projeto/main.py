@@ -1056,7 +1056,7 @@ REGRAS IMPORTANTES
 - consistência dos treinos;
 - variação de estímulos;
 - padrões de treino ao longo do tempo;
-- relação entre treinos recentes e competições futures.
+- relação entre treinos recentes e competições futuras.
 
 2. Você deve identificar:
 - risco de overtraining;
