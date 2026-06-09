@@ -190,8 +190,9 @@ def controledesempenho(nomedotreino):
 
     desemp = {}
     try:
-        abrir_leitura()
-        desempenhos = (conteudo).split("\n---\n")
+        with open("Controle_de_Desempenho.txt", "r") as file:
+            conteudo = file.read()
+            desempenhos = (conteudo).split("\n---\n")
     except:
         file = open("Controle_de_Desempenho.txt", "x")
         desempenhos = []
