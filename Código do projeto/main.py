@@ -697,9 +697,10 @@ while True:
         treino.close()
         try:
             with open("Controle_de_Desempenho.txt", "r") as cdd:
-                if len(cdd.read()) > 10: #usando len() ao invez de == "" or == "\n" pra evitar variações desses (ex. "\n\n\n")
+                conteudo = cdd.read()
+                if len(conteudo) > 10: #usando len() ao invez de == "" or == "\n" pra evitar variações desses (ex. "\n\n\n")
                     print("\n===Controle de Desempenhos===")
-                    print(cdd.read())
+                    print(conteudo)
         except:
             pass
         if not pergunta():
