@@ -36,12 +36,12 @@ def pergunta(): #a pergunta de continuação do sistema
         else: 
             print("RESPOSTA INVÁLIDA!") 
 
-def nomeDOtreino(conteudo):
+def nomeDOtreino(conteudo): #Adição de nome do TREINO
     while True:
         try:
             nome_treino = input("Digite o nome do treino: ")
         except:
-            if f"NOME DO TREINO: {nome_treino.upper().strip()}" in conteudo: #UPPER deixa tudo em maiusculo e STRIP tira os espaços em branco
+            if f"NOME DO TREINO: {nome_treino.upper().strip()}" in conteudo:
                 print("O treino ja existe!\n")
                 continue
         else:
@@ -49,7 +49,7 @@ def nomeDOtreino(conteudo):
             break
     return nome_treino
 
-def tipoDEtreino():
+def tipoDEtreino(): #tipo do treino
     while True:
         try:
             tipo_treino = int(input("[1] CORRIDA / [2] FORÇA / [3] SIMULADO HYROX \n\nDigite o tipo de treino entre os disponíveis: " ))
@@ -62,6 +62,11 @@ def tipoDEtreino():
             
             elif tipo_treino == 3:
                 tipo = "SIMULADO HYROX"
+
+            else:
+                clear()
+                print("Digite apenas 1, 2 ou 3!\n")
+                continue
             
         except (ValueError, TypeError): 
             clear()
@@ -72,7 +77,7 @@ def tipoDEtreino():
     clear()
     return tipo
 
-def intensidadeDEtreino():
+def intensidadeDEtreino(): #intensidade do treino
     while True:
         try:
             intensidade_treino = int(input("[1] - LEVE / [2] - MODERADO / [3] - PESADO"
@@ -95,35 +100,30 @@ def intensidadeDEtreino():
         else:
             break
     clear()
-    return intensidade_final
+    return intensidade_final #devolve a intensidade em forma de STRING
 
-def editarOnome():
+def editarOnome(): #EDIÇÃO de treino
     while True:
-        nome_treino = input(f"O nome atual é: {nome_antigo}"
+        nome_treino = input(f"O nome atual é: {nome_antigo}" #pra dar o direito de escolha se quer permanecer o mesmo treino ou não
                             "\nPara permanecer com o mesmo nome clique ENTER" 
                             "\n\nDigite o nome do treino: ").upper()
-        if nome_treino == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
-            return nome_treino
-        else:
-            return nome_treino
+       
+        return nome_treino
         
 def editarOtipo():
     while True:
-
-        entrada = input(f"O tipo atual é: {tipo_antigo}\n"
-            "Para permanecer com o mesmo tipo clique ENTER\n\n"
-            "[1] CORRIDA\n"
-            "[2] FORÇA\n"
-            "[3] SIMULADO HYROX\n\n"
-            "Digite o tipo de treino: ")
-
-        if entrada == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
-            return ""
-
         try:
-            tipo_treino = int(entrada)
+            tipo_treino = input(f"O tipo atual é: {tipo_antigo}\n" #pra dar o direito de escolha se quer permanecer o mesmo treino ou não
+                "Para permanecer com o mesmo tipo de treino clique ENTER\n\n"
+                "[1] CORRIDA\n"
+                "[2] FORÇA\n"
+                "[3] SIMULADO HYROX\n\n"
+                "Digite o tipo de treino: ")
 
-            if tipo_treino == 1:
+            if tipo_treino == "":
+                return ""
+            
+            elif tipo_treino == 1:
                 return "CORRIDA"
 
             elif tipo_treino == 2:
@@ -131,33 +131,30 @@ def editarOtipo():
 
             elif tipo_treino == 3:
                 return "SIMULADO HYROX"
-
+            
             else:
                 clear()
                 print("Digite apenas 1, 2 ou 3!\n")
+                continue
 
         except ValueError:
             clear()
             print("Resposta inválida!\n")
-    
+            
 def editarAintensidade():
     while True:
-
-        entrada = input(f"A intensidade atual é: {intensidade_antiga}\n"
-            "Para permanecer com a mesma intensidade clique ENTER\n\n"
-            "[1] LEVE\n"
-            "[2] MODERADO\n"
-            "[3] PESADO\n\n"
-            "Digite a intensidade: "
-        )
-
-        if entrada == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
-            return ""
-
         try:
-            intensidade = int(entrada)
+            intensidade = input(f"A intensidade atual é: {intensidade_antiga}\n"
+                "Para permanecer com a mesma intensidade clique ENTER\n\n"
+                "[1] LEVE\n"
+                "[2] MODERADO\n"
+                "[3] PESADO\n\n"
+                "Digite a intensidade: ")
+            
+            if intensidade == "": #se estiver em branco é porque foi apertado ENTER e continua o antigo
+                return ""
 
-            if intensidade == 1:
+            elif intensidade == 1:
                 return "Treino Leve"
 
             elif intensidade == 2:
@@ -169,6 +166,7 @@ def editarAintensidade():
             else:
                 clear()
                 print("Digite apenas 1, 2 ou 3!\n")
+                continue
 
         except ValueError:
             clear()
@@ -180,7 +178,6 @@ def validar_data():
         try:
             data = input("Digite a data do treino (dd/mm/aaaa): ")
             data_formatada = datetime.strptime(data, "%d/%m/%Y") #para que so aceite o formato de data
-
             clear()
             return data
                 
@@ -191,29 +188,24 @@ def validar_data():
 
 def controledesempenho(nomedotreino):
 
-    desemp = {} 
-
-    # ================= ABRE O ARQUIVO ===================
- 
+    desemp = {}
     try:
-        file = open("Controle_de_Desempenho.txt", "r")
-        conteudo = file.read()
+        abrir_leitura()
         desempenhos = (conteudo).split("\n---\n")
     except:
         file = open("Controle_de_Desempenho.txt", "x")
         desempenhos = []
-    file.close()
+        file.close()
 
     achou = False #verifica se o treino existe no CDD
     for i in range(len(desempenhos)):
-        if nomedotreino + "\n" in desempenhos[i]: #⚠️ .lower() talvez
+        if nomedotreino + "\n" in desempenhos[i]:
             esse_desempenho = desempenhos[i]
             index = i
             achou = True
             break
     
     if achou: # se existe, colocar no dicionário pq é ela que vai ser editada
-
         linhas = esse_desempenho.split("\n")
         
         i = 1
@@ -232,7 +224,6 @@ def controledesempenho(nomedotreino):
     # ====================== ADICIONAR NOVA LEITURA / CRIAR EXERCICIO =============
 
     def add(exercicio):
-        #exercicio é o nome do exercicio
 
         if exercicio not in desemp.keys():
             desemp[exercicio] = [[],[],[],[]] #se o exercicio não existir ainda, criar uma matriz pra ele
@@ -253,7 +244,7 @@ def controledesempenho(nomedotreino):
 
     def salvarmatriz():
         if desemp.keys() == []: #só vai acontecer se o treino não existia antes
-            return "oxi fez nada vou escrever pra que tu é doido"
+            return "oxi! fez nada... vou escrever o que? tu é doido"
         
         dados = nomedotreino
         
@@ -277,10 +268,6 @@ def controledesempenho(nomedotreino):
                 dados += (d + "\t")
         
         desempenhos[index] = dados
-
-        #treinos.pop()
-        #treinos.append("\n---\n".join(desempenhos)) #⚠️comentario pra teste deletar dps (esse pode)
-
         conteudo = "\n---\n".join(desempenhos)
 
 
@@ -370,9 +357,7 @@ def acompanhamento_evolucao():
     # AQQQ LE O ARQUIVO
 
     try:
-        file = open("Sistema de Treinos.txt", "r")
-        conteudo = file.read()
-        file.close()
+        abrir_leitura()
     except FileNotFoundError:
         print("Nenhum dado encontrado.")
         return
@@ -412,16 +397,19 @@ def acompanhamento_evolucao():
             print(f"  {mes}: {barra} ({qtd})")
         print()
 
-    # AQQ MOSTRA A EVOLUÇÃO DO TREINO
+    # AQQ MOSTRA A EVOLUÇÃO DO EXERCICIO
+    file = open("Controle_de_Desempenho.txt", "r")
+    cont_exerc = file.read()
+    file.close()
 
     print("========== EVOLUÇÃO DE EXERCÍCIOS ==========\n")
 
-    if "EXERCICIOS:" not in conteudo:
+    if "EXERCICIOS:" not in cont_exerc:
         print("Nenhum exercício registrado ainda.\n")
         return
 
 
-    secao_exercicios = conteudo.split("EXERCICIOS:")[-1]
+    secao_exercicios = cont_exerc.split("EXERCICIOS:")[-1]
     blocos_treino = secao_exercicios.split("\n---\n")
 
     exercicios_globais = {}
@@ -430,8 +418,8 @@ def acompanhamento_evolucao():
         linhas = bloco.strip().split("\n")
         i = 1
         while i < len(linhas) - 3:
-            nome_ex = linhas[i].strip()
-            if not nome_ex:
+            nome_exerc = linhas[i].strip()
+            if not nome_exerc:
                 i += 1
                 continue
 
@@ -444,17 +432,17 @@ def acompanhamento_evolucao():
                 i += 1
                 continue
 
-            if nome_ex not in exercicios_globais:
-                exercicios_globais[nome_ex] = {"tempos": [], "cargas": [], "distancias": [], "repeticoes": []}
+            if nome_exerc not in exercicios_globais:
+                exercicios_globais[nome_exerc] = {"tempos": [], "cargas": [], "distancias": [], "repeticoes": []}
 
             for t in tempos:
-                exercicios_globais[nome_ex]["tempos"].append(t)
+                exercicios_globais[nome_exerc]["tempos"].append(t)
             for d in distancias:
-                exercicios_globais[nome_ex]["distancias"].append(d)
+                exercicios_globais[nome_exerc]["distancias"].append(d)
             for c in cargas:
-                exercicios_globais[nome_ex]["cargas"].append(c)
+                exercicios_globais[nome_exerc]["cargas"].append(c)
             for r in repeticoes:
-                exercicios_globais[nome_ex]["repeticoes"].append(r)
+                exercicios_globais[nome_exerc]["repeticoes"].append(r)
 
             i += 5
 
@@ -466,10 +454,10 @@ def acompanhamento_evolucao():
         print(f"  {nome_ex}")
 
         metricas = [
-            ("Tempo",       exercicios_globais[nome_ex]["tempos"],      True),
-            ("Distância",   exercicios_globais[nome_ex]["distancias"],  False),
-            ("Carga",       exercicios_globais[nome_ex]["cargas"],      False),
-            ("Repetições",  exercicios_globais[nome_ex]["repeticoes"],  False)
+            ("Tempo",       exercicios_globais[nome_exerc]["tempos"],      True),
+            ("Distância",   exercicios_globais[nome_exerc]["distancias"],  False),
+            ("Carga",       exercicios_globais[nome_exerc]["cargas"],      False),
+            ("Repetições",  exercicios_globais[nome_exerc]["repeticoes"],  False)
         ]
 
         for nome_metrica, lista, menor_e_melhor in metricas:
@@ -618,14 +606,25 @@ def dashboard():
         conteudo_comp = comp.read()
         comp.close()
 
-        total_comp = conteudo_comp.count("==========")
+        total_comp = conteudo_comp.count("DATA:")
 
     except FileNotFoundError:
         total_comp = 0
 
+    try:
+        exerc = open("Controle_de_Desempenho.txt", "r")
+        conteudo_exerc = exerc.read()
+        exerc.close()
+
+        total_exerc = conteudo_exerc.count("Cargas:")
+
+    except FileNotFoundError:
+        total_exerc = 0
+
     print("\t==========DASHBOARD==========\n")
     print(f"\tTreinos cadastrados: {total_treinos}")
-    print(f"\tCompetições cadastradas: {total_comp}\n")
+    print(f"\tCompetições cadastradas: {total_comp}")
+    print(f"\tExercícios cadastrados: {total_exerc}\n")
     
 while True:
    print("==========BEM VINDO AO HYROX PLANNER==========\n")
@@ -741,7 +740,7 @@ while True:
                 treino_encontrado = treino
                 break
 
-        if treino_encontrado is None: #não encontrou
+        if treino_encontrado is None:
             print("Treino inexistente!")
             continue
 
@@ -926,19 +925,20 @@ while True:
 
    elif opcao_escolhida == "6":
         treinoCD = input("Digite um treino para adicionar um desempenho: ")
+        conteudo = abrir_leitura()
 
-        treino = open("Sistema de Treinos.txt", "r")
-        conteudo = treino.read()
         if "NOME DO TREINO: " + treinoCD.upper() in conteudo:
             controledesempenho(treinoCD)
         else:
+            clear
             print("Treino inexistente, adicione ele pelo CRUDE primeiro!")
+            if not pergunta():
+                break
         
-
 
    elif opcao_escolhida == "7":
         import datetime
-        nome_comp = input("Digite o nome da competição:")
+        nome_comp = input("Digite o nome da competição: ")
         while True:
             data_comp = input("Digite a data da competição (DD/MM/AAAA): ")
             try:
@@ -948,13 +948,14 @@ while True:
             except ValueError:
                 print("Data inválida ou fora do padrão (DD/MM/AAAA). Tente novamente!\n")
 
-        local_comp = input("Digite o local da competição:")
-        cat_comp = input("Digite a categoria da competição:")
+        local_comp = input("Digite o local da competição: 3")
+        cat_comp = input("Digite a categoria da competição: ")
 
         adicionar_competicao(nome_comp,data_comp,local_comp,cat_comp)
-
+        clear()
         print("Competição adicionada com sucesso!\n\n")
-
+        if not pergunta():
+            break
     
    elif opcao_escolhida == "8":
        acompanhamento_evolucao()
@@ -989,7 +990,7 @@ while True:
         print("\nProcessando a sua pergunta com Inteligência Artificial... Por favor, aguarde.")
         
         try:
-            client = Groq(api_key="")
+            #client = Groq(api_key="")
             
             prompt_sistema = f"""
 Você é um treinador especialista em HYROX, corrida híbrida,
@@ -1131,7 +1132,7 @@ REGRAS IMPORTANTES
             clear()
 
     
-   elif opcao_escolhida == "11":
+   elif opcao_escolhida == "11":#
         print("Programa Finalizado!")
         break
 
